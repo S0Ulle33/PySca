@@ -33,18 +33,32 @@ class MainPresenter:
             thread.exit_signal.connect(self.on_thread_exit)
             thread.start()
 
-    def on_thread_exit(self, thread):
-        self.threads.pop(self.threads.index(thread[0]))
-        self.setCurrentThreadsLabel(len(self.threads))
-        if len(self.threads) == 0:
+    def on_thread_exit(self, is_last):
+        if is_last == True:
             self.isScanEnabled = False
             self.ui.startButton.setText("Start")
+            return
+        count = 0
+        for thr in self.threads:
+            if thr.is_running == True:
+                count = count + 1
+        self.setCurrentThreadsLabel(count)
 
     def stopScan(self):
         self.isScanEnabled = False
         for thread in self.threads:
-            thread.exit_signal.emit(self.threads.index(thread))
             thread.exit()
+            thread.is_running = False
+            count = 0
+            is_last_thread = False
+            for i in self.threads:
+                if i.is_running != True:
+                    count += 1
+            if count == len(self.threads):
+                is_last_thread = True
+            thread.exit_signal.emit(is_last_thread)
+        self.threads.clear()
+        self.ui.currentThreadsLabel.setText("0")
         self.queue = queue.Queue()
 
     def setLogText(self, string):
@@ -57,7 +71,7 @@ class MainPresenter:
 class ScanThread(QThread):
 
     signal = pyqtSignal(str)
-    exit_signal = pyqtSignal(list)  # This signal for correct pop'ing from thread list
+    exit_signal = pyqtSignal(bool)
 
     def __init__(self, scanQueue, ports, timeout, presenter, parent=None):
         QThread.__init__(self, parent)
@@ -67,17 +81,24 @@ class ScanThread(QThread):
         self._stop_event = threading.Event()
         self.timeout = timeout
         self.presenter = presenter
+        self.is_running = True
 
     def run(self):
         while True:
             if self.scanQueue.empty():
-                self.exit_signal.emit([self])
+                self.is_running = False
+                count = 0
+                is_last_thread = False
+                for i in self.presenter.threads:
+                    if i.isRunning() != True:
+                        count += 1
+                if count == len(self.presenter.threads):
+                    is_last_thread = True
+                self.exit_signal.emit(is_last_thread)
                 self.exit(1)
             hostObject = self.scanQueue.get()
             open_ports = self.coreModel.scanIP(str(hostObject), self.ports)
-            signalStr = ''.join(str(x) for x in open_ports)
-            if(signalStr == ''):
-                self.signal.emit(str(hostObject) + ' has no open ports!')
-            else:
+            signalStr = ', '.join(open_ports)
+            if signalStr != '':
                 self.signal.emit(str(hostObject) + ' has open ports: ' + signalStr)
             self.scanQueue.task_done()
