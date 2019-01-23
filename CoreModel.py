@@ -13,4 +13,5 @@ class CoreModel:
             if result == 0:
                 openPorts.append(i)
             self.defSocket.close()
+            self.defSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         return openPorts
