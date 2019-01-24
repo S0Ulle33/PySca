@@ -66,6 +66,11 @@ def getCIDRFromRanges(ips):
             # If we get any non-ip value just ignore it
             pass
 
+    # TODO: Change docstrings and variable names
+    return ip_objects
+
+
+"""
     for ip_obj in ip_objects:
         # The object is just one ip, simply yield it:
         if isinstance(ip_obj, ipaddress.IPv4Address):
@@ -73,4 +78,4 @@ def getCIDRFromRanges(ips):
         # The object is a network, yield every host in it:
         else:
             for host in ip_obj.hosts():
-                yield host
+                yield host"""
