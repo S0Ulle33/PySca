@@ -44,10 +44,10 @@ class MainPresenter:
 
     def stop_scan(self):
         self.is_scan_enabled = False
-        for t in self.threads:
+        for t in self.scan_threads:
             t.stop()
         self.listener_thread.stop()
-        self.threads.clear()
+        self.scan_threads.clear()
         self.scan_queue.queue.clear()
         self.ui.set_running_threads_label("0")
 
@@ -56,14 +56,14 @@ class MainPresenter:
             "[" + str(datetime.datetime.now()) + "] " + str(text))
 
     def on_thread_exit(self):
-        if not all([t.is_running for t in self.threads]):
+        if not all([t.is_running for t in self.scan_threads]):
             self.is_scan_enabled = False
             self.ui.startButton.setText("Start")
         current_running_threads_label = self.get_running_threads_label()
         self.set_running_threads_label(current_running_threads_label - 1)
 
     def get_running_threads_label(self):
-        return self.ui.currentThreadsLabel.getText()
+        return int(self.ui.currentThreadsLabel.text())
 
     def set_running_threads_label(self, threadNumber):
         self.ui.currentThreadsLabel.setText(str(threadNumber))
@@ -78,6 +78,7 @@ class ListenerThread(QThread):
         self.target = target
         self.listen_socket = socket.socket(
             socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
+        # self.listen_socket.bind(("", 0))
         self.is_running = False
 
     def run(self):
@@ -97,7 +98,7 @@ class ListenerThread(QThread):
 
 class ScanThread(QThread):
 
-    exit_signal = pyqtSignal(bool)
+    exit_signal = pyqtSignal()
 
     def __init__(self, scan_queue, ports, timeout, presenter, parent=None):
         QThread.__init__(self, parent)
@@ -106,8 +107,8 @@ class ScanThread(QThread):
         # self.timeout = timeout
         # self._stop_event = threading.Event()
         # self.presenter = presenter
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_RAW,
-                                    socket.IPPROTO_TCP)
+        self.socket = socket.socket(
+            socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
         self.source_ips = {}
         self.is_running = False
 
