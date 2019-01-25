@@ -28,7 +28,7 @@ def getPortsFromString(ports):
         # Change to default ports from constant
         return [21, 22, 23, 25, 80, 443, 110, 111, 135, 139, 445, 8080, 8443, 53, 143, 989, 990, 3306, 1080, 5554, 6667, 2222, 4444, 666, 6666, 1337, 2020, 31337]
 
-
+# TODO: Change docstrings and variable names
 def getCIDRFromRanges(ips):
     """
     Parses ip input string, returns the generator over them.
@@ -66,11 +66,10 @@ def getCIDRFromRanges(ips):
             # If we get any non-ip value just ignore it
             pass
 
-    # TODO: Change docstrings and variable names
     return ip_objects
 
 
-"""
+    """ # Now generator is in CoreModel.Target
     for ip_obj in ip_objects:
         # The object is just one ip, simply yield it:
         if isinstance(ip_obj, ipaddress.IPv4Address):
@@ -78,4 +77,5 @@ def getCIDRFromRanges(ips):
         # The object is a network, yield every host in it:
         else:
             for host in ip_obj.hosts():
-                yield host"""
+                yield host
+    """
