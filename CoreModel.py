@@ -26,15 +26,15 @@ class Target:
         self.targets = targets
         self.ports = ports
 
-    def is_target(self, ip):
+    def is_target(self, ip, port):
         ip = ipaddress.ip_address(ip)
         for target in self.targets:
             if isinstance(target, ipaddress.IPv4Network):
                 for host in target.hosts():
-                    if ip == host:
+                    if ip == host and port in self.ports:
                         return True
             else:
-                if ip == target:
+                if ip == target and port in self.ports:
                     return True
         return False
 
