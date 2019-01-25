@@ -101,7 +101,6 @@ class MainPresenter:
 
 class ListenerWorker(QObject):
 
-    MAX_RETRIES = 5
     finished_signal = pyqtSignal()
     log_signal = pyqtSignal(str)
 
@@ -116,6 +115,7 @@ class ListenerWorker(QObject):
     @pyqtSlot()
     def work(self):
         self.log_signal.emit("ListenerWorker::work()")
+        MAX_RETRIES = 5
         RETRIES = 0
         while self.is_running:
             if not all([item[1] for item in self.ip_ports.items()]) or RETRIES >= MAX_RETRIES:
