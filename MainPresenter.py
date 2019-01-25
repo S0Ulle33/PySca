@@ -35,7 +35,7 @@ class MainPresenter:
 
         listener_worker = ListenerWorker(target)
         listener_thread = QThread()
-        listener_worker.open_port_signal.connect(self.log_text)
+        listener_worker.log_signal.connect(self.log_text)
         listener_worker.moveToThread(listener_thread)
         listener_worker.finished_signal.connect(listener_thread.exit)
         listener_worker.finished_signal.connect(self.worker_exit)
@@ -56,7 +56,7 @@ class MainPresenter:
             self.__scan_threads.append((scan_worker, scan_thread))
         self.set_running_threads_label(len(self.__scan_threads) + 1)
         [t[1].start() for t in self.__scan_threads]
-        
+
 
     def worker_exit(self):
         self.set_running_threads_label(int(self.ui.currentThreadsLabel.text()) - 1)
@@ -68,7 +68,7 @@ class MainPresenter:
                 self.scan_queue.all_tasks_done.notify_all()
                 self.scan_queue.unfinished_tasks = 0
             self.ui.startButton.setText("Start")
-    
+
     def stop_scan(self):
         self.stop_workers()
         self.is_scan_enabled = False
