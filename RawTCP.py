@@ -40,15 +40,15 @@ class TCPHeader():
 
 def checksum(msg):
     # Shoutout to Silver Moon @ binarytides for this checksum algo.
-    sum = 0
+    sum_ = 0
     for i in range(0, len(msg), 2):
         w = msg[i] + (msg[i + 1] << 8)
-        sum = sum + w
+        sum_ = sum_ + w
 
-    sum = (sum >> 16) + (sum & 0xffff)
-    sum = sum + (sum >> 16)
-    sum = ~sum & 0xffff
-    return sum
+    sum_ = (sum_ >> 16) + (sum_ & 0xffff)
+    sum_ = sum_ + (sum_ >> 16)
+    sum_ = ~sum_ & 0xffff
+    return sum_
 
 
 def tcp_checksum(source_ip, dest_ip, tcp_header, user_data=b''):
@@ -88,11 +88,11 @@ def handle_packet(raw_packet):
     tcp_header = unpack('!HHLLBB', tcp_header_raw)
 
     src_port = tcp_header[0]  # self-explanatory
-    dst_port = tcp_header[1]  # self-explanatory FIXME: notused
+    #dst_port = tcp_header[1]  # self-explanatory FIXME: notused
     # We only care about syn-ack, which will be 18 (0x12)
     flag = tcp_header[5]
 
     if flag == 18:
-        return (src_addr, src_port)
+        return True, (src_addr, src_port)
     else:
-        return None
+        return False, (src_addr, src_port)
