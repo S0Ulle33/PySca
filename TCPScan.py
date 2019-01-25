@@ -8,7 +8,6 @@ class TCPScanner:
         self.source_ips = {}
         # TODO: options, threading, input/output queues
         self.options = None
-        return
 
     def in_scope(self):
         """Check that IP is in scanning scope"""
@@ -18,7 +17,8 @@ class TCPScanner:
     def tcp_listener(self):
         # Raw socket listener for when send_raw_syn() is used. This will catch
         # return SYN-ACKs
-        listen = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
+        listen = socket.socket(
+            socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
         while True:
             # packet = ('E \x00(\x1f\xaa@\x00w\x06\x99w2\xe0\xc8\xa2\xa2\xf3\xac\x18\xdf\xb3\x00\x16\xb6\x80\xc1\xa0/\xa6=$P\x10\xce\xab\xd1\xe4\x00\x00', ('50.XXX.200.162', 0))
             raw_packet = listen.recvfrom(65565)
@@ -36,7 +36,8 @@ class TCPScanner:
         try:
             # Using IPPROTO_TCP so the kernel will deal with the IP packet for us.
             # Change to IPPROTO_IP if you want control of IP header as well
-            s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
+            s = socket.socket(socket.AF_INET, socket.SOCK_RAW,
+                              socket.IPPROTO_TCP)
         except Exception:
             sys.stderr.write("Error creating socket in send_raw_syn\n")
             return
@@ -54,7 +55,8 @@ class TCPScanner:
         try:
             s.sendto(packet, (dest_ip, 0))
         except Exception as e:
-            sys.stderr.write("Error utilizing raw socket in send_raw_syn: {}\n".format(e))
+            sys.stderr.write(
+                "Error utilizing raw socket in send_raw_syn: {}\n".format(e))
 
     def get_source_ip(self, dst_addr):
         # Credit: 131264/alexander from stackoverflow. This gets the correct IP for sending. Useful if you have multiple interfaces
@@ -79,7 +81,8 @@ def send_full_connect_syn(ip, port, timeout):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(timeout)
     except Exception as e:
-        sys.stderr.write("Error creating socket in send_full_connect_syn: {}\n".format(e))
+        sys.stderr.write(
+            "Error creating socket in send_full_connect_syn: {}\n".format(e))
         return False
     try:
         s.connect((ip, port))
