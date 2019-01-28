@@ -8,7 +8,7 @@ from PyQt5.QtCore import QObject, pyqtSlot
 
 import CoreModel
 import parser
-from scaner import SYNScanner
+from scanner import SYNScanner
 
 
 class MainPresenter:
