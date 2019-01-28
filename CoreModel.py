@@ -26,24 +26,25 @@ class Target:
         self.targets = targets
         self.ports = ports
 
-    def is_target(self, ip, port):
+    def isTarget(self, ip, port):
+        if port not in self.ports:
+            return False
+
         ip = ipaddress.ip_address(ip)
         for target in self.targets:
-            if isinstance(target, ipaddress.IPv4Network):
-                for host in target.hosts():
-                    if ip == host and port in self.ports:
-                        return True
-            else:
-                if ip == target and port in self.ports:
+            try:
+                if ip in target.hosts():
                     return True
+            except AttributeError:
+                if ip == target:
+                    return True
+
         return False
 
     def range(self):
         for target in self.targets:
-            # The target is just one ip, simply yield it:
-            if isinstance(target, ipaddress.IPv4Address):
-                yield target
-            # The target is a network, yield every host in it:
-            else:
+            try:
                 for host in target.hosts():
                     yield host
+            except AttributeError:
+                yield target
