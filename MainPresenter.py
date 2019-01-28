@@ -1,13 +1,11 @@
 import datetime
 import queue
-import socket
-from time import sleep
 
 from PyQt5.Qt import QThread, pyqtSignal
 from PyQt5.QtCore import QObject, pyqtSlot
 
 import CoreModel
-import parser
+import Parser
 from scanner import SYNScanner
 
 
@@ -23,8 +21,8 @@ class MainPresenter:
         self.__scanThreads = []
 
     def startScan(self, IPRanges, ports, threadsNumber, timeout):
-        IPRanges = parser.getCIDRFromRanges(IPRanges)
-        ports = parser.getPortsFromString(ports)
+        IPRanges = Parser.getCIDRFromRanges(IPRanges)
+        ports = Parser.getPortsFromString(ports)
         threadsNumber = int(threadsNumber)
         if not timeout:
             timeout = 3
@@ -75,6 +73,7 @@ class MainPresenter:
     def setRunningThreadsLabel(self, threadNumber):
         self.ui.currentThreadsLabel.setText(str(threadNumber))
 
+
 """
 class ListenerWorker(QObject):
 
@@ -121,6 +120,7 @@ class ListenerWorker(QObject):
         self.listenSocket.close()
         self.finishedSignal.emit()
 """
+
 
 class ScanWorker(QObject):
 
