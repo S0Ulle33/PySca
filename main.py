@@ -19,14 +19,14 @@ class MyWin(QtWidgets.QMainWindow):
         self.isScanActive = False
 
     def startButtonClicked(self):
-        if self.presenter.is_scan_enabled:
-            self.presenter.is_scan_enabled = False
+        if self.presenter.isScanEnabled:
+            self.presenter.isScanEnabled = False
             self.ui.startButton.setText("Start")
-            self.presenter.stop_scan()
+            self.presenter.stopScan()
         else:
-            self.presenter.is_scan_enabled = True
+            self.presenter.isScanEnabled = True
             self.ui.startButton.setText("Stop")
-            self.presenter.start_scan(self.ui.ipLine.text(),
+            self.presenter.startScan(self.ui.ipLine.text(),
                                       self.ui.portsLine.text(),
                                       self.ui.threadsLine.text(),
                                       self.ui.timeoutLine.text())
